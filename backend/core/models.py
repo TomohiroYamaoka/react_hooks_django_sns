@@ -3,6 +3,11 @@ from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, Permis
 from django.conf import settings
 
 
+def upload_path(instance, filename):
+    ext = filename.split('.')[-1]
+    return '/'.join(['image'], str(instance.userPro.id)+str(instance.nickName)+str(ext))
+
+
 class UserManager(BaseUserManager):
     def create_user(self, email, password=None, **extra_fields):
         if not email:
@@ -37,3 +42,53 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     def __str__(self):
         return self.email
+
+
+class Profile(models.Model):
+
+    nickName = models.CharField(max_length=20)
+    # １つのUserに対して１つのフィールドを紐づける
+    userPro = models.OneToOneField(
+        settings.AUTH_USER_MODEL, related_name='userPro',
+        # Userが消えたらここも紐付けで削除されるようにする
+        on_delete=models.CASCADE
+    )
+    created_on = models.DateTimeField(auto_now_add=True)
+    img = models.ImageField(blank=True, null=True, upload_to=upload_path)
+
+    def __str__(self):
+        return self.nickName
+
+
+class FriendRequest(models.Model):
+    askFrom = models.ForeignKey(
+        settings.AUTH_USER_MODEL, related_name='askFrom',
+        on_delete=models.CASCADE
+    )
+    askTo = models.ForeignKey(
+        settings.AUTH_USER_MODEL, related_name='askTo',
+        on_delete=models.CASCADE
+    )
+    approved = models.BooleanField(default=False)
+
+    # 2回以降の申請は弾かれるようになる
+    class Meta:
+        unique_together = (('askFrom', 'askTo'),)
+
+    def __str__(self):
+        return str(self.askForm)+'===='+str(self.askTo)
+
+
+class Message(models.Model):
+    message = models.CharField(max_length=140)
+    sender = models.ForeignKey(
+        settings.AUTH_USER_MODEL, related_name='sender',
+        on_delete=models.CASCADE
+    )
+    receiver = models.ForeignKey(
+        settings.AUTH_USER_MODEL, related_name='receiver',
+        on_delete=models.CASCADE
+    )
+
+    def __str__(self):
+        return self.sender
