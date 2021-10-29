@@ -4,3 +4,8 @@
 
 初期環境は下記の通り　　
 https://github.com/TomohiroYamaoka/react_hooks_django_test
+
+## 構造
+
+config : Django の基本的な設定。  
+core : DB の管理
