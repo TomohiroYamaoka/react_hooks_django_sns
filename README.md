@@ -5,7 +5,7 @@
 初期環境は下記の通り　　
 https://github.com/TomohiroYamaoka/react_hooks_django_test
 
-# Django の静的ファイルを Google Storage に管理する方法
+## Django の静的ファイルを Google Storage に管理する方法
 
 https://blog.daisukekonishi.com/post/django-storages/
 
