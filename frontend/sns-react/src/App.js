@@ -1,24 +1,30 @@
-import logo from './logo.svg';
-import './App.css';
+import React from "react";
+import "./App.css";
+
+import { createTheme } from "@material-ui/core/styles";    <- createThemeに変更
+import { ThemeProvider as MuiThemeProvider } from "@material-ui/core/styles";
+import indigo from "@material-ui/core/colors/indigo";
+import Navbar from "./components/Navbar";
+import ApiContextProvider from "./context/ApiContext";
+
+
+const theme= createTheme({
+  palette:{
+    primary:indigo,
+    secondary:{
+      main: '#f44336'
+    },
+  },
+  typography:{
+    fontFamily:"cosmic neue"
+  }
+})
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <MuiThemeProvider theme={theme}>
+      <Navbar />
+      </MuiThemeProvider>
   );
 }
 

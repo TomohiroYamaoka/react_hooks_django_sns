@@ -9,8 +9,8 @@ router.register('profile', views.ProfileViewSet)
 router.register('approval', views.FriendRequestViewSet)
 
 urlpatterns = [
-    path('create/', views.CreateUserView.as_view, name="create"),
-    path('myprofile/', views.MyProfileListView.as_view, name="myprofile"),
+    path('create/', views.CreateUserView.as_view(), name="create"),
+    path('myprofile/', views.MyProfileListView.as_view(), name="myprofile"),
 
     path('', include(router.urls))
 ]
