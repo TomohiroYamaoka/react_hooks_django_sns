@@ -1,5 +1,4 @@
 from django.urls import path, include
-from react_hooks_django_sns.backend.api_user import views
 from rest_framework.routers import DefaultRouter
 from api_dm import views
 

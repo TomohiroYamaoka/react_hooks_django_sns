@@ -1,11 +1,9 @@
-from react_hooks_django_sns.backend.api_user import views
 from rest_framework import authentication, permissions
 from api_dm import serializers
 from core.models import Message
 from rest_framework import viewsets
 from rest_framework import status
-from rest_framework.response import Response
-# Create your views here.
+#from rest_framework.response import Response
 
 
 class MessageViewSet(viewsets.ModelViewSet):

@@ -37,3 +37,22 @@ approved
 sender
 receiver
 message
+
+## url
+
+api/user/create(POST)  
+新規ユーザーアカウント作成
+
+api/user/profile(CRUD)
+
+api/user/myprofile(GET)  
+ログインユーザー自身のプロフィール確認
+
+api/user/approval(POST/GET/PUT)  
+友達申請の作成と承諾
+
+api/user/inbox(GET)  
+自分宛のダイレクトメッセージ
+
+api/user/inbox(POST)  
+ダイレクトメッセージ送信
