@@ -19,5 +19,24 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export const Navbar = () => {
-  return <div></div>;
+  const classes = useStyles();
+  const Logout = () => (event) => {
+    props.cookies.remove("current-token");
+    window.location.href = "/";
+  };
+  return (
+    <AppBar position="static">
+      <Toolbar>
+        <Typography variant="h5" className={classes.title}>
+          SNS APP
+        </Typography>
+        <Badge className={classes.bg} badgeContent={3} color="secondary">
+          <NotificationsIcon />
+        </Badge>
+        <button className="signout" onClick={Logout()}>
+          <FiLogOut />
+        </button>
+      </Toolbar>
+    </AppBar>
+  );
 };
