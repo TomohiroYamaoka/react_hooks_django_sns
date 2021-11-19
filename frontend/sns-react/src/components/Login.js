@@ -101,15 +101,63 @@ const loginReducer = (state, action) => {
   }
 };
 
-export const Login = () => {
+export const withCookies(Login) = (props) => {
   const classes = useStyles();
   const [state, dispatch] = useReducer(loginReducer, initialState);
   /*ログインフォームでなんらかしらの変更があった際に、呼び出す変数*/
   const inputChangedLog = () => {
+    const cred = state.credentialsLog;
     cred[target.name] = target.valzue;
     dispatch({
       type: INPUT_EDIT,
       inputName: "state.credentiaLog",
+      payload: cred,
     });
   };
-};
+  const inputChangedReg = () => {
+    const cred = state.credentialsReg;
+    cred[target.name] = target.valzue;
+    dispatch({
+      type: INPUT_EDIT,
+      inputName: "state.credentiaReg",
+      payload: cred,
+    });
+  };
+  const login = async (event) => {
+    event.preventDefault()
+    if(state.isLoginView){
+      try{
+        dispatch({type:START_FETCH}) 
+        const res =await axious.post('http://127.0.0.1:8000/authen/',state.credentialsLog,{
+        headers:{'Content-Type':'application/json'}})
+        this.props.cookies.set('current-token',res.data.token)
+        res.data.token ? window.location.href = "/profiles" : window.location.href = "/"
+        dispatch({type: FETCH_SUCCESS})
+      }catch{
+        dispatch({type: ERROR_CATCHED})
+      }
+    }else{
+      try{
+        dispatch({type:START_FETCH})
+        const res = await axious.postpost('http://127.0.0.1:8000/api/user/create',state.credentialsReg,{
+          headers:{'Content-Type':'application/json'}})
+          dispatch({type: FETCH_SUCCESS})
+          dispatch({type: TOGGLE_MODE})
+      } catch {
+        dispatch({type: ERROR_CATCHED})
+      }
+      }
+    }
+  }
+  const toggleView = () => {
+    dispatch({type: TOGGLE_MODE})
+  }
+
+  return (
+  <Container maxWidth = "xs">
+    <form onSubmit={login}>
+      <div className={classes}>
+    </form>
+  </Container>
+  )
+}
