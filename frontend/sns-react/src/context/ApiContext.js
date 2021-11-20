@@ -174,6 +174,62 @@ const ApiContextProvider = (props) => {
       console.log("error");
     }
   };
+  /**友達申請 */
+  /**
+   * approvalをfalseからtrueに変更する
+   * uploadDataはfalseをtrueにした情報を受け渡している。
+   * askは、誰から誰へというオブジェクト
+   */
+  const changeApprovalRequest = async(uploadDataAsk,ask) =>{
+    try {
+      const res = await axios.put(`http://localhost:8000/api/user/approval/${ask.id}`, uploadDataAsk, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Token ${token}`,
+        },
+      })
+      setAskList(askList.map(item=>(item.id===ask.id? res.data:item)))
+
+      const newDataAsk = new FormData()
+      newDataAsk.append("askTo",ask.askFrom)
+      newDataAsk.append("approved",true)
+
+      const newDataAskPut = new FormData()
+      newDataAskPut.append("askTo",askFrom)
+      newDataAskPut.append("askFrom",askTo)
+      newDataAskPut.append("approved",true)
+      
+      const resp = askListFull.filter((item) => {
+        return item.askFrom === profile.userPro && item.askTo === ask.askFrom;
+      });
+      /**返り値が存在しない場合は作成する*/
+      !resp[0]
+      ? await axios.post(
+        `http://localhost:8000/api/user/approval/`,
+        newDataAsk,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Token ${token}`,
+          },
+        }
+      )
+      : await axios.put(
+        `http://localhost:8000/api/user/approval/${resp[0].id}/`,
+        newDataAskPut,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Token ${token}`,
+          },
+        }
+      );
+    } catch {
+      console.log("error");
+    }
+  };
+}
+
   return (
     <div>
       <></>
