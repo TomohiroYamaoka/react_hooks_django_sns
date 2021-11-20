@@ -143,6 +143,37 @@ const ApiContextProvider = (props) => {
       console.log("error");
     }
   };
+
+  const newRequestFriend = async (askData) => {
+    try {
+      const res = await axios.post(
+        `http://localhost:8000/api/user/approval/`,
+        askData,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Token ${token}`,
+          },
+        }
+      );
+      setAskListFull([...askListFull, res.data]);
+    } catch {
+      console.log("error");
+    }
+  };
+
+  const sendDMCont = async (uploadDM) => {
+    try {
+      await axios.post(`http://localhost:8000/api/dm/message/`, uploadDM, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Token ${token}`,
+        },
+      });
+    } catch {
+      console.log("error");
+    }
+  };
   return (
     <div>
       <></>
