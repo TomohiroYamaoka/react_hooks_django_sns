@@ -14,6 +14,7 @@ import {
   INPUT_EDIT,
   TOGGLE_MODE,
 } from "./actionTypes";
+import { Typography } from "@material-ui/core";
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -156,8 +157,116 @@ export const withCookies(Login) = (props) => {
   return (
   <Container maxWidth = "xs">
     <form onSubmit={login}>
-      <div className={classes}>
+      <div className={classes.papaer}>
+        {state.isLoading && <CircularProgress />}
+      <Avatar className={classes.avatar}>
+        <LockOutlinedIcon/>
+        </Avatar>
+        <Typography variant="h5">
+          {state.isLoginView ? 'Login' : 'Register'}
+        </Typography>
+      </div>
     </form>
+    {state.isLoginView ? (
+            <TextField
+              variant="outlined"
+              margin="normal"
+              fullWidth
+              label="Email"
+              name="username"
+              value={state.credentialsLog.username}
+              onChange={inputChangedLog()}
+              autoFocus
+            />
+          ) : (
+            <TextField
+              variant="outlined"
+              margin="normal"
+              fullWidth
+              label="Email"
+              name="email"
+              value={state.credentialsReg.email}
+              onChange={inputChangedReg()}
+              autoFocus
+            />
+          )}
+
+          {state.isLoginView ? (
+            <TextField
+              variant="outlined"
+              margin="normal"
+              fullWidth
+              label="Password"
+              name="password"
+              type="password"
+              value={state.credentialsLog.password}
+              onChange={inputChangedLog()}
+            />
+          ) : (
+            <TextField
+              variant="outlined"
+              margin="normal"
+              fullWidth
+              label="Password"
+              name="password"
+              type="password"
+              value={state.credentialsReg.password}
+              onChange={inputChangedReg()}
+            />
+          )}
+          <span className={classes.spanError}>{state.error}</span>
+
+          {state.isLoginView ? (
+            !state.credentialsLog.password || !state.credentialsLog.username ? (
+              <Button
+                className={classes.submit}
+                type="submit"
+                fullWidth
+                disabled
+                variant="contained"
+                color="primary"
+              >
+                Login
+              </Button>
+            ) : (
+              <Button
+                className={classes.submit}
+                type="submit"
+                fullWidth
+                variant="contained"
+                color="primary"
+              >
+                Login
+              </Button>
+            )
+          ) : !state.credentialsReg.password || !state.credentialsReg.email ? (
+            <Button
+              className={classes.submit}
+              type="submit"
+              fullWidth
+              disabled
+              variant="contained"
+              color="primary"
+            >
+              Register
+            </Button>
+          ) : (
+            <Button
+              className={classes.submit}
+              type="submit"
+              fullWidth
+              variant="contained"
+              color="primary"
+            >
+              Register
+            </Button>
+          )}
+
+          <span onClick={() => toggleView()} className={classes.span}>
+            {state.isLoginView ? "Create Accout ?" : "Back to login ?"}
+          </span>
+        </div>
+      </form>
   </Container>
   )
 }
