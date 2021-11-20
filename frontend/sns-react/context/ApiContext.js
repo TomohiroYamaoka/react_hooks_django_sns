@@ -49,8 +49,100 @@ const ApiContextProvider = (props) => {
         console.log("error");
       }
     };
-  });
 
+    const getProfile = async () => {
+      try {
+        const res = await axious.get(
+          "http://localhost:8000/api/user/profile/",
+          {
+            headers: {
+              Authorization: `Token ${token}`,
+            },
+          }
+        );
+        setProfiles(res.data);
+      } catch {
+        console.log("error");
+      }
+    };
+    const getInbox = async () => {
+      try {
+        const res = await axios.get("http://localhost:8000/api/dm/inbox/", {
+          headers: {
+            Authorization: `Token ${token}`,
+          },
+        });
+        setInbox(res.data);
+      } catch {
+        console.log("error");
+      }
+    };
+    getMyProfile();
+    getProfile();
+    getInbox();
+  }, [token, profile.id]);
+
+  const createProfile = async () => {
+    const createData = new FormData();
+    createData.append("nickName", editedProfile.nickName);
+    cover.name && createData.append("img", cover, cover.name);
+    try {
+      const res = await axios.post(
+        "http://localhost:8000/api/user/profile/",
+        createData,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Token ${token}`,
+          },
+        }
+      );
+      setProfile(res.data);
+      setEditedProfile({ id: res.data.id, nickName: res.data.nickName });
+    } catch {
+      console.log("error");
+    }
+  };
+  const deleteProfile = async () => {
+    try {
+      await axios.delete(
+        `http://localhost:8000/api/user/profile/${profile.id}/`,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Token ${token}`,
+          },
+        }
+      );
+      setProfiles(profiles.filter((dev) => dev.id !== profile.id));
+      setProfile([]);
+      setEditedProfile({ id: "", nickName: "" });
+      setCover([]);
+      setAskList([]);
+    } catch {
+      console.log("error");
+    }
+  };
+  const editProfile = async () => {
+    const editData = new FormData();
+    editData.append("nickName", editedProfile.nickName);
+    cover.name && editData.append("img", cover, cover.name);
+    try {
+      const res = await axios.put(
+        `http://localhost:8000/api/user/profile/${profile.id}/`,
+        editData,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Token ${token}`,
+          },
+        }
+      );
+      setProfile(res.data);
+    } catch {
+      console.log("error");
+    }
+  };
   return (
     <div>
       <></>
