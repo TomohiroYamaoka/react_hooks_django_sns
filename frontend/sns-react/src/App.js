@@ -22,9 +22,14 @@ const theme= createTheme({
 
 function App() {
   return (
-    <MuiThemeProvider theme={theme}>
-      <Navbar />
+    <ApiContextProvider>
+      <MuiThemeProvider theme={theme}>
+        <Navbar />
+        <div className="container">
+        <Main />
+        </div>
       </MuiThemeProvider>
+    </ApiContextProvider>
   );
 }
 
