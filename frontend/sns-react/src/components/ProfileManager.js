@@ -65,7 +65,6 @@ const ProfileManager = () => {
     const name = event.target.name;
     setEditedProfile({ ...editedProfile, [name]: value });
   };
-
   return (
     <div className={classes.profile}>
       <div className="image-wrapper">
@@ -82,6 +81,7 @@ const ProfileManager = () => {
           type="file"
           id="imageInput"
           hidden="hidden"
+          //hidden=true
           onChange={(event) => {
             setCover(event.target.files[0]);
             event.target.value = "";
@@ -90,6 +90,45 @@ const ProfileManager = () => {
         <IconButton onClick={handleEditPicture}>
           <MdAddAPhoto className="photo" />
         </IconButton>
+      </div>
+
+      {editedProfile.id ? (
+        editedProfile.nickName ? (
+          <button className="user" onClick={() => editProfile()}>
+            <FaUserEdit />
+          </button>
+        ) : (
+          <button className="user-invalid" disabled>
+            <FaUserEdit />
+          </button>
+        )
+      ) : editedProfile.nickName && cover.name ? (
+        <button className="user" onClick={() => createProfile()}>
+          <BsPersonPlus />
+        </button>
+      ) : (
+        <button className="user-invalid" disabled>
+          <BsPersonPlus />
+        </button>
+      )}
+      <button className="trash" onClick={() => deleteProfile()}>
+        <BsTrash />
+      </button>
+
+      <div className="profile-details">
+        <BsPersonCheckFill className="badge" />{" "}
+        {profile && <span>{profile.nickName}</span>}
+        <hr />
+        <input
+          type="text"
+          value={editedProfile.nickName}
+          name="nickName"
+          onChange={handleInputChange()}
+        />
+        <hr />
+        <span>Joined at {profile.created_on} </span>
+        <hr />
+        <LocationOn /> <span>JAPAN</span>
       </div>
     </div>
   );
