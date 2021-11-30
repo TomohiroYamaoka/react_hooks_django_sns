@@ -1,18 +1,17 @@
 import React, { createContext, useState, useEffect } from "react";
-import { withCookies } from "react";
-import axious from "axious";
+import { withCookies } from "react-cookie";
+import axios from "axios";
 export const ApiContext = createContext();
 
 const ApiContextProvider = (props) => {
-  /*ここでログイン認証が成功した時のユーザーのtokenを取得する。*/
   const token = props.cookies.get("current-token");
   const [profile, setProfile] = useState([]);
   const [profiles, setProfiles] = useState([]);
-  const [editProfile, setEditProfile] = useState({ id: "", nickName: "" });
+  const [editedProfile, setEditedProfile] = useState({ id: "", nickName: "" });
   const [askList, setAskList] = useState([]);
   const [askListFull, setAskListFull] = useState([]);
   const [inbox, setInbox] = useState([]);
-  const [cover, setCover] = useState([]); /*自分のプロフィールを格納*/
+  const [cover, setCover] = useState([]);
 
   useEffect(() => {
     const getMyProfile = async () => {
@@ -35,13 +34,13 @@ const ApiContextProvider = (props) => {
         );
         resmy.data[0] && setProfile(resmy.data[0]);
         resmy.data[0] &&
-          setEditProfile({
+          setEditedProfile({
             id: resmy.data[0].id,
             nickName: resmy.data[0].nickName,
           });
         resmy.data[0] &&
           setAskList(
-            resmy.data.filter((ask) => {
+            res.data.filter((ask) => {
               return resmy.data[0].userPro === ask.askTo;
             })
           );
@@ -53,14 +52,11 @@ const ApiContextProvider = (props) => {
 
     const getProfile = async () => {
       try {
-        const res = await axious.get(
-          "http://localhost:8000/api/user/profile/",
-          {
-            headers: {
-              Authorization: `Token ${token}`,
-            },
-          }
-        );
+        const res = await axios.get("http://localhost:8000/api/user/profile/", {
+          headers: {
+            Authorization: `Token ${token}`,
+          },
+        });
         setProfiles(res.data);
       } catch {
         console.log("error");
@@ -104,6 +100,7 @@ const ApiContextProvider = (props) => {
       console.log("error");
     }
   };
+
   const deleteProfile = async () => {
     try {
       await axios.delete(
@@ -124,6 +121,7 @@ const ApiContextProvider = (props) => {
       console.log("error");
     }
   };
+
   const editProfile = async () => {
     const editData = new FormData();
     editData.append("nickName", editedProfile.nickName);
@@ -175,16 +173,11 @@ const ApiContextProvider = (props) => {
       console.log("error");
     }
   };
-  /**友達申請 */
-  /**
-   * approvalをfalseからtrueに変更する
-   * uploadDataはfalseをtrueにした情報を受け渡している。
-   * askは、誰から誰へというオブジェクト
-   */
+
   const changeApprovalRequest = async (uploadDataAsk, ask) => {
     try {
       const res = await axios.put(
-        `http://localhost:8000/api/user/approval/${ask.id}`,
+        `http://localhost:8000/api/user/approval/${ask.id}/`,
         uploadDataAsk,
         {
           headers: {
@@ -200,14 +193,14 @@ const ApiContextProvider = (props) => {
       newDataAsk.append("approved", true);
 
       const newDataAskPut = new FormData();
-      newDataAskPut.append("askTo", askFrom);
-      newDataAskPut.append("askFrom", askTo);
+      newDataAskPut.append("askTo", ask.askFrom);
+      newDataAskPut.append("askFrom", ask.askTo);
       newDataAskPut.append("approved", true);
 
       const resp = askListFull.filter((item) => {
         return item.askFrom === profile.userPro && item.askTo === ask.askFrom;
       });
-      /**返り値が存在しない場合は作成する*/
+
       !resp[0]
         ? await axios.post(
             `http://localhost:8000/api/user/approval/`,
