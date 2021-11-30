@@ -1,9 +1,11 @@
 import React, { useReducer } from "react";
 import { withCookies } from "react-cookie";
-import axious from "axious";
+import axios from "axios";
 import Avatar from "@material-ui/core/Avatar";
 import Button from "@material-ui/core/Button";
 import TextField from "@material-ui/core/TextField";
+import LockOutlinedIcon from "@material-ui/icons/LockOutlined";
+import Typography from "@material-ui/core/Typography";
 import { makeStyles } from "@material-ui/core/styles";
 import Container from "@material-ui/core/Container";
 import CircularProgress from "@material-ui/core/CircularProgress";
@@ -11,10 +13,10 @@ import {
   START_FETCH,
   FETCH_SUCCESS,
   ERROR_CATCHED,
-  INPUT_EDIT,
+  INPUT_EDIT_LOG,
+  INPUT_EDIT_REG,
   TOGGLE_MODE,
 } from "./actionTypes";
-import { Typography } from "@material-ui/core";
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -48,15 +50,16 @@ const useStyles = makeStyles((theme) => ({
     marginTop: 10,
   },
 }));
+
 const initialState = {
-  isLoading: false /*Loading時false→終了時True*/,
+  isLoading: false,
   isLoginView: true,
   error: "",
   credentialsLog: {
     username: "",
     password: "",
   },
-  credentialReg: {
+  credentialsReg: {
     email: "",
     password: "",
   },
@@ -83,11 +86,24 @@ const loginReducer = (state, action) => {
         isLoading: false,
       };
     }
-    case INPUT_EDIT: {
-      /*payloadは入力されたemaiとかnameとか*/
+    case INPUT_EDIT_LOG: {
       return {
         ...state,
-        [action.inputName]: action.payload,
+        credentialsLog: {
+          ...state.credentialsLog,
+          [action.inputName]: action.payload,
+        },
+        error: "",
+      };
+    }
+    case INPUT_EDIT_REG: {
+      return {
+        ...state,
+        //[action.inputName]: action.payload,
+        credentialsReg: {
+          ...state.credentialsReg,
+          [action.inputName]: action.payload,
+        },
         error: "",
       };
     }
@@ -102,72 +118,82 @@ const loginReducer = (state, action) => {
   }
 };
 
-export const withCookies(Login) = (props) => {
+const Login = (props) => {
   const classes = useStyles();
   const [state, dispatch] = useReducer(loginReducer, initialState);
-  /*ログインフォームでなんらかしらの変更があった際に、呼び出す変数*/
-  const inputChangedLog = () => {
-    const cred = state.credentialsLog;
-    cred[target.name] = target.valzue;
+
+  const inputChangedLog = () => (event) => {
     dispatch({
-      type: INPUT_EDIT,
-      inputName: "state.credentiaLog",
-      payload: cred,
+      type: INPUT_EDIT_LOG,
+
+      inputName: event.target.name,
+      payload: event.target.value,
     });
   };
-  const inputChangedReg = () => {
-    const cred = state.credentialsReg;
-    cred[target.name] = target.valzue;
+
+  const inputChangedReg = () => (event) => {
     dispatch({
-      type: INPUT_EDIT,
-      inputName: "state.credentiaReg",
-      payload: cred,
+      type: INPUT_EDIT_REG,
+      inputName: event.target.name,
+      payload: event.target.value,
     });
   };
+
   const login = async (event) => {
-    event.preventDefault()
-    if(state.isLoginView){
-      try{
-        dispatch({type:START_FETCH}) 
-        const res =await axious.post('http://127.0.0.1:8000/authen/',state.credentialsLog,{
-        headers:{'Content-Type':'application/json'}})
-        this.props.cookies.set('current-token',res.data.token)
-        res.data.token ? window.location.href = "/profiles" : window.location.href = "/"
-        dispatch({type: FETCH_SUCCESS})
-      }catch{
-        dispatch({type: ERROR_CATCHED})
-      }
-    }else{
-      try{
-        dispatch({type:START_FETCH})
-        const res = await axious.postpost('http://127.0.0.1:8000/api/user/create',state.credentialsReg,{
-          headers:{'Content-Type':'application/json'}})
-          dispatch({type: FETCH_SUCCESS})
-          dispatch({type: TOGGLE_MODE})
+    event.preventDefault();
+    if (state.isLoginView) {
+      try {
+        dispatch({ type: START_FETCH });
+        const res = await axios.post(
+          "http://127.0.0.1:8000/authen/",
+          state.credentialsLog,
+          {
+            headers: { "Content-Type": "application/json" },
+          }
+        );
+        props.cookies.set("current-token", res.data.token);
+        res.data.token
+          ? (window.location.href = "/profiles")
+          : (window.location.href = "/");
+        dispatch({ type: FETCH_SUCCESS });
       } catch {
-        dispatch({type: ERROR_CATCHED})
+        dispatch({ type: ERROR_CATCHED });
       }
+    } else {
+      try {
+        dispatch({ type: START_FETCH });
+        await axios.post(
+          "http://127.0.0.1:8000/api/user/create/",
+          state.credentialsReg,
+          {
+            headers: { "Content-Type": "application/json" },
+          }
+        );
+        dispatch({ type: FETCH_SUCCESS });
+        dispatch({ type: TOGGLE_MODE });
+      } catch {
+        dispatch({ type: ERROR_CATCHED });
       }
     }
-  }
+  };
+
   const toggleView = () => {
-    dispatch({type: TOGGLE_MODE})
-  }
+    dispatch({ type: TOGGLE_MODE });
+  };
 
   return (
-  <Container maxWidth = "xs">
-    <form onSubmit={login}>
-      <div className={classes.papaer}>
-        {state.isLoading && <CircularProgress />}
-      <Avatar className={classes.avatar}>
-        <LockOutlinedIcon/>
-        </Avatar>
-        <Typography variant="h5">
-          {state.isLoginView ? 'Login' : 'Register'}
-        </Typography>
-      </div>
-    </form>
-    {state.isLoginView ? (
+    <Container maxWidth="xs">
+      <form onSubmit={login}>
+        <div className={classes.paper}>
+          {state.isLoading && <CircularProgress />}
+          <Avatar className={classes.avatar}>
+            <LockOutlinedIcon />
+          </Avatar>
+          <Typography variant="h5">
+            {state.isLoginView ? "Login" : "Register"}
+          </Typography>
+
+          {state.isLoginView ? (
             <TextField
               variant="outlined"
               margin="normal"
@@ -267,6 +293,8 @@ export const withCookies(Login) = (props) => {
           </span>
         </div>
       </form>
-  </Container>
-  )
-}
+    </Container>
+  );
+};
+
+export default withCookies(Login);
