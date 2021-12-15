@@ -123,6 +123,7 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
+# Userモデルを編集するため、下記の設定を追加する
 AUTH_USER_MODEL = 'core.User'
 
 STATIC_URL = '/static/'

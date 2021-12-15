@@ -17,6 +17,7 @@ from django.contrib import admin
 from django.urls import path, include
 from rest_framework.authtoken import views
 from django.conf import settings
+# staticから画像データを取得する
 from django.conf.urls.static import static
 
 urlpatterns = [
@@ -24,6 +25,7 @@ urlpatterns = [
     path('authen/', views.obtain_auth_token),
     # api/usersのURLが来た時に、api_userフォルダのurlsを参照
     path('api/user/', include('api_user.urls')),
+    # api/dmのURLが来た時に、api_userフォルダのurlsを参照
     path('api/dm/', include('api_dm.urls')),
 ]
 

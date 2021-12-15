@@ -5,7 +5,7 @@ from django.conf import settings
 
 def upload_path(instance, filename):
     ext = filename.split('.')[-1]
-    return '/'.join(['image'], str(instance.userPro.id)+str(instance.nickName)+str(ext))
+    return '/'.join(['image', str(instance.userPro.id)+str(instance.nickName)+str(ext)])
 
 
 class UserManager(BaseUserManager):
@@ -26,6 +26,7 @@ class UserManager(BaseUserManager):
         user = self.create_user(email, password)
         user.is_staff = True
         user.is_superuser = True
+        #　saveしてDBに登録
         user.save(using=self._db)
 
         return user
@@ -47,7 +48,7 @@ class User(AbstractBaseUser, PermissionsMixin):
 class Profile(models.Model):
 
     nickName = models.CharField(max_length=20)
-    # １つのUserに対して１つのフィールドを紐づける
+    # １つのUserに対して１つのProfileを紐づける
     userPro = models.OneToOneField(
         settings.AUTH_USER_MODEL, related_name='userPro',
         # Userが消えたらここも紐付けで削除されるようにする
@@ -72,6 +73,8 @@ class FriendRequest(models.Model):
     approved = models.BooleanField(default=False)
 
     # 2回以降の申請は弾かれるようになる
+    # class文の中に入れ子でMetaという名前のclass文を定義しておくと、
+    # そこから情報を読み取って定義しているクラスにデータベースアクセスに関連する追加の情報や機能を差し挟んでくれる
     class Meta:
         unique_together = (('askFrom', 'askTo'),)
 
