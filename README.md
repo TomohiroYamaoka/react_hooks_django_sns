@@ -56,3 +56,7 @@ api/user/inbox(GET)
 
 api/user/inbox(POST)  
 ダイレクトメッセージ送信
+
+##
+
+画像ファイルを扱う ⇨pillow を追加
