@@ -18,7 +18,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export const Ask = () => {
+export const Ask = ({ ask, prof }) => {
   const classes = useStyles();
   Modal.setAppElement("#root");
   //modalについて
