@@ -13,7 +13,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export const Profile = () => {
+export const Profile = ({ profileData, askData }) => {
   const classes = useStyles();
   const { newRequestFriend, profile } = useContext(ApiContext);
 

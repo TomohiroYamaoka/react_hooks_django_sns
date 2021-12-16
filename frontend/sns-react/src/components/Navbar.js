@@ -17,8 +17,9 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export const Navbar = () => {
+const Navbar = (props) => {
   const classes = useStyles();
+  const { askList, profiles } = useContext(ApiContext);
   const Logout = () => (event) => {
     props.cookies.remove("current-token");
     window.location.href = "/";
@@ -27,15 +28,30 @@ export const Navbar = () => {
     <AppBar position="static">
       <Toolbar>
         <Typography variant="h5" className={classes.title}>
-          SNS APP
+          SNS App
         </Typography>
-        <Badge className={classes.bg} badgeContent={3} color="secondary">
+        <Badge
+          className={classes.bg}
+          badgeContent={
+            askList.filter((ask) => {
+              return (
+                ask.approved === false &&
+                profiles.filter((item) => {
+                  return item.userPro === ask.askFrom;
+                })[0]
+              );
+            }).length
+          }
+          color="secondary"
+        >
           <NotificationsIcon />
         </Badge>
-        <button className="signout" onClick={Logout()}>
+        <button className="signOut" onClick={Logout()}>
           <FiLogOut />
         </button>
       </Toolbar>
     </AppBar>
   );
 };
+
+export default withCookies(Navbar);
